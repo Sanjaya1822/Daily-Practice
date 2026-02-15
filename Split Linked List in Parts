@@ -1,0 +1,100 @@
+LeetCode 725 – Split Linked List in Parts
+
+Problem Statement
+
+Given the head of a singly linked list and an integer `k`, split the linked list into `k` consecutive linked list parts.
+
+Rules:
+
+The length of each part should be as equal as possible
+The size difference between any two parts should be at most 1
+Earlier parts must be greater than or equal in sizecompared to later parts
+Some parts may be null if the list has fewer nodes than `k`
+
+---
+
+Approach
+
+1.Count the total number of nodes in the linked list.
+2. Calculate:
+
+   * `baseSize = length / k` → minimum nodes in each part
+   * `extra = length % k` → first `extra` parts get one extra node
+3. Traverse the list and:
+
+   * Assign nodes to each part based on the calculated size
+   * Break the link after each part to form independent lists
+4. Store each part in an array of size `k`.
+
+This ensures:
+
+* Balanced splitting
+* Correct order
+* Valid handling of null parts
+
+Java Solution
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode[] splitListToParts(ListNode head, int k) {
+
+        // Step 1: Calculate the length of the linked list
+        int len = 0;
+        ListNode temp = head;
+        while (temp != null) {
+            len++;
+            temp = temp.next;
+        }
+
+        // Step 2: Determine base size and remainder
+        int baseSize = len / k;
+        int extra = len % k;
+
+        // Step 3: Result array
+        ListNode[] result = new ListNode[k];
+        ListNode curr = head;
+
+        // Step 4: Split the list
+        for (int i = 0; i < k; i++) {
+            if (curr == null) {
+                result[i] = null;
+                continue;
+            }
+
+            result[i] = curr;
+            int partSize = baseSize + (extra > 0 ? 1 : 0);
+            if (extra > 0) extra--;
+
+            // Move to the end of the current part
+            for (int j = 1; j < partSize; j++) {
+                curr = curr.next;
+            }
+
+            // Break the link
+            ListNode next = curr.next;
+            curr.next = null;
+            curr = next;
+        }
+
+        return result;
+    }
+}
+ Complexity Analysis
+
+Time Complexity: `O(n)`
+Space Complexity: `O(1)` (excluding output array)
+Key Takeaways
+
+Always return exactly `k` parts
+First `length % k` parts get one extra node
+Breaking links is essential to form separate lists
+Works correctly even when `k > length`
